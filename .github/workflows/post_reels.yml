@@ -20,29 +20,24 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Post to Meta Facebook Graph API
-        env:
-          PAGE_ACCESS_TOKEN: ${{ secrets.PAGE_ACCESS_TOKEN }}
+      - name: Create Python Script
         run: |
+          cat << 'EOF' > post_to_fb.py
           import os
-          import json
           import urllib.request
           import urllib.parse
           
-          # ඔබගේ නිවැරදි Page ID එක
           page_id = '1142879355574849'
-          token = os.environ['PAGE_ACCESS_TOKEN']
+          token = os.environ.get('PAGE_ACCESS_TOKEN')
           
-          # පෝස්ට් කළ යුතු අන්තර්ගතය
           post_text = (
               "🔬 🌟 Daily Science & Fun 🌟 🔬\n\n"
               "Did you know? Bananas are curved because they grow towards the sun against gravity, "
-              "a process known as 'negative geotropism'. 🍌\n\n"
+              "a process known as negative geotropism. 🍌\n\n"
               "Joke: Why can't you trust atoms? Because they make up everything! 😂\n\n"
               "#ScienceFacts #Funny #ScienceJoke"
           )
           
-          # API අනුවාදය 22.0 දක්වා යාවත්කාලීන කිරීම
           query_params = urllib.parse.urlencode({'message': post_text, 'access_token': token})
           fb_url = f'https://graph.facebook.com/v22.0/{page_id}/feed?{query_params}'
           
@@ -57,3 +52,9 @@ jobs:
               print('Raw Response:', e.read().decode('utf-8'))
           except Exception as e:
               print('Unexpected Error:', e)
+          EOF
+
+      - name: Run Post Script
+        env:
+          PAGE_ACCESS_TOKEN: ${{ secrets.PAGE_ACCESS_TOKEN }}
+        run: python post_to_fb.py
