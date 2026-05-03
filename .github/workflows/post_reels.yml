@@ -27,7 +27,9 @@ jobs:
 
           GEMINI_API_KEY = 'AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A'
           genai.configure(api_key=GEMINI_API_KEY)
-          model = genai.GenerativeModel('gemini-1.5-flash')
+          
+          # gemini-1.5-flash වෙනුවට gemini-1.5-pro භාවිතා කිරීම
+          model = genai.GenerativeModel('gemini-1.5-pro')
 
           prompt = 'Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'
           
