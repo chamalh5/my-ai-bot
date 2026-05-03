@@ -39,7 +39,7 @@ jobs:
           )
           
           query_params = urllib.parse.urlencode({'message': post_text, 'access_token': token})
-          fb_url = f'https://graph.facebook.com/v22.0/{page_id}/feed?{query_params}'
+          fb_url = f'https://graph.facebook.com/v21.0/{page_id}/feed?{query_params}'
           
           req = urllib.request.Request(fb_url, method='POST')
           
