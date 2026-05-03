@@ -15,25 +15,27 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install google-generativeai
+        # නවතම google-genai package එක Install කිරීම
+        run: pip install requests google-genai
 
       - name: Test Gemini API Generation
         run: |
           python -c "
-          import google.generativeai as genai
+          import os
+          from google import genai
 
+          # නිවැරදි API Key එක යෙදීම
           GEMINI_API_KEY = 'AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A'
-          genai.configure(api_key=GEMINI_API_KEY)
-          
-          # gemini-1.5-flash වෙනුවට gemini-1.5-pro භාවිතා කිරීම
-          model = genai.GenerativeModel('gemini-1.5-pro')
+          client = genai.Client(api_key=GEMINI_API_KEY)
 
-          prompt = 'Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'
-          
-          response = model.generate_content(prompt)
+          # නිවැරදි ආකෘතිය (Model) ලෙස gemini-2.5-flash භාවිතා කිරීම
+          response = client.models.generate_content(
+              model='gemini-2.5-flash',
+              contents='Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'
+          )
           print('--- GENERATED CONTENT ---')
           print(response.text)
           print('-------------------------')
