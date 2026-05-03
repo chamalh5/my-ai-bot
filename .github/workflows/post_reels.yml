@@ -20,39 +20,38 @@ jobs:
       - name: Install dependencies
         run: pip install requests google-generativeai
 
-      - name: Run Script
+      - name: Create and Run Python Script
         env:
           PAGE_ACCESS_TOKEN: ${{ secrets.PAGE_ACCESS_TOKEN }}
         run: |
+          python -c "
           import os
           import requests
           import google.generativeai as genai
 
-          GEMINI_API_KEY = "AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A"
-          PAGE_ID = "1142879355574849"
+          GEMINI_API_KEY = 'AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A'
+          PAGE_ID = '1142879355574849'
 
           genai.configure(api_key=GEMINI_API_KEY)
-          model = genai.GenerativeModel("gemini-1.5-flash")
+          model = genai.GenerativeModel('gemini-1.5-flash')
 
-          prompt = (
-              "Create a combined social media post in English. "
-              "Part 1: A short, engaging, and amazing science fact. "
-              "Part 2: A clean and funny science-related joke. "
-              "Add emojis and relevant hashtags."
-          )
+          prompt = 'Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'
           
-          response = model.generate_content(prompt)
-          content = response.text
+          try:
+              response = model.generate_content(prompt)
+              content = response.text
+          except Exception as e:
+              content = 'Could not generate content'
 
-          post_text = f"🔬 *Daily Science & Fun* 🔬\n\n{content}"
+          post_text = f'🔬 Daily Science & Fun 🔬\n\n{content}'
 
-          # ඡායාරූප වෙනුවට සරල පෝස්ට් එකක් (feed) යැවීම
-          url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/feed"
+          url = f'https://graph.facebook.com/v20.0/{PAGE_ID}/feed'
           
           payload = {
-              "message": post_text,
-              "access_token": os.environ["PAGE_ACCESS_TOKEN"]
+              'message': post_text,
+              'access_token': os.environ['PAGE_ACCESS_TOKEN']
           }
 
           r = requests.post(url, data=payload)
           print(r.json())
+          "
