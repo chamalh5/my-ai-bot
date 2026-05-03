@@ -26,7 +26,7 @@ jobs:
           from google import genai
 
           # ඔබගේ නව API Key එක මෙහි යොදන්න
-          GEMINI_API_KEY = 'ඔබේ_අලුත්_API_Key_එක_මෙතනට_දමන්න'
+          GEMINI_API_KEY = 'AIzaSyBnfB1bm8cDxUCw5iDVto-9mLJtyiz2k2A'
           client = genai.Client(api_key=GEMINI_API_KEY)
 
           response = client.models.generate_content(
