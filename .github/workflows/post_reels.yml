@@ -18,20 +18,17 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        # නවතම google-genai package එක Install කිරීම
         run: pip install requests google-genai
 
       - name: Test Gemini API Generation
         run: |
           python -c "
-          import os
           from google import genai
 
-          # නිවැරදි API Key එක යෙදීම
-          GEMINI_API_KEY = 'AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A'
+          # ඔබගේ නව API Key එක මෙහි යොදන්න
+          GEMINI_API_KEY = 'ඔබේ_අලුත්_API_Key_එක_මෙතනට_දමන්න'
           client = genai.Client(api_key=GEMINI_API_KEY)
 
-          # නිවැරදි ආකෘතිය (Model) ලෙස gemini-2.5-flash භාවිතා කිරීම
           response = client.models.generate_content(
               model='gemini-2.5-flash',
               contents='Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'
