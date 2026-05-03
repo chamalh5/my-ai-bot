@@ -35,7 +35,6 @@ jobs:
           genai.configure(api_key=GEMINI_API_KEY)
           model = genai.GenerativeModel("gemini-1.5-flash")
 
-          # විද්‍යාත්මක කරුණ සහ විහිළුව ජනනය කිරීම සඳහා Prompt එක
           prompt = (
               "Create a combined social media post in English. "
               "Part 1: A short, engaging, and amazing science fact. "
@@ -48,9 +47,13 @@ jobs:
 
           post_text = f"🔬 *Daily Science & Fun* 🔬\n\n{content}"
 
-          url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/feed"
+          # ඡායාරූපයක් සහිතව පෝස්ට් එක යැවීම සඳහා වන Graph API Endpoint එක
+          url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
+          
+          # නිදහසේ භාවිත කළ හැකි අන්තර්ජාලයේ ඇති විද්‍යාත්මක පසුබිම් පින්තූරයක URL එක
           payload = {
-              "message": post_text,
+              "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop",
+              "caption": post_text,
               "access_token": os.environ["PAGE_ACCESS_TOKEN"]
           }
 
