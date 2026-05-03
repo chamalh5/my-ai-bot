@@ -1,10 +1,9 @@
-name: Auto Post Reels
+name: Auto Post Science Fact and Joke
 
 on:
   schedule:
-    # දිනපතා උදේ 6.00 සහ සවස 4.00 ට ක්‍රියාත්මක වන පරිදි (විනාඩි 0, පැය 6 සහ 16)
     - cron: '0 6,16 * * *'
-  workflow_dispatch: # Manual එකක් Run කිරීමට
+  workflow_dispatch:
 
 jobs:
   post-reel:
@@ -30,21 +29,28 @@ jobs:
           import requests
           import google.generativeai as genai
 
-          # API Key එක මෙහි ඇතුළත් කරන්න
           GEMINI_API_KEY = "AIzaSyDUu9OAYmzPAVrg3PX55nWuZ87hmvy3Y6A"
           PAGE_ID = "1142879355574849"
 
           genai.configure(api_key=GEMINI_API_KEY)
           model = genai.GenerativeModel("gemini-1.5-flash")
 
-          # Gemini API එකෙන් අන්තර්ගතය ලබා ගැනීම
-          response = model.generate_content("Create a short, engaging Facebook Reel caption about motivation in Sinhala.")
-          caption = response.text
+          # විද්‍යාත්මක කරුණ සහ විහිළුව ජනනය කිරීම සඳහා Prompt එක
+          prompt = (
+              "Create a combined social media post in English. "
+              "Part 1: A short, engaging, and amazing science fact. "
+              "Part 2: A clean and funny science-related joke. "
+              "Add emojis and relevant hashtags."
+          )
+          
+          response = model.generate_content(prompt)
+          content = response.text
 
-          # Facebook Graph API එකට යැවීම
+          post_text = f"🔬 *Daily Science & Fun* 🔬\n\n{content}"
+
           url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/feed"
           payload = {
-              "message": caption,
+              "message": post_text,
               "access_token": os.environ["PAGE_ACCESS_TOKEN"]
           }
 
