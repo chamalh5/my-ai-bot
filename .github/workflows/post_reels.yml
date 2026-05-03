@@ -20,50 +20,40 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Post to Facebook
+      - name: Post to Meta Facebook Graph API
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PAGE_ACCESS_TOKEN: ${{ secrets.PAGE_ACCESS_TOKEN }}
         run: |
-          python -c "
           import os
           import json
           import urllib.request
           import urllib.parse
-
-          api_key = os.environ['GEMINI_API_KEY']
-          page_access_token = os.environ['PAGE_ACCESS_TOKEN']
+          
+          # ඔබගේ නිවැරදි Page ID එක
           page_id = '1142879355574849'
-
-          # Gemini API සඳහා නිවැරදි URL එක සකස් කිරීම
-          url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
+          token = os.environ['PAGE_ACCESS_TOKEN']
           
-          headers = {'Content-Type': 'application/json'}
-          data = {
-              'contents': {
-                  'parts': [{'text': 'Create a combined social media post in English. Part 1: A short, engaging, and amazing science fact. Part 2: A clean and funny science-related joke. Add emojis and relevant hashtags.'}]
-              }
-          }
+          # පෝස්ට් කළ යුතු අන්තර්ගතය
+          post_text = (
+              "🔬 🌟 Daily Science & Fun 🌟 🔬\n\n"
+              "Did you know? Bananas are curved because they grow towards the sun against gravity, "
+              "a process known as 'negative geotropism'. 🍌\n\n"
+              "Joke: Why can't you trust atoms? Because they make up everything! 😂\n\n"
+              "#ScienceFacts #Funny #ScienceJoke"
+          )
           
-          req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers, method='POST')
+          # API අනුවාදය 22.0 දක්වා යාවත්කාලීන කිරීම
+          query_params = urllib.parse.urlencode({'message': post_text, 'access_token': token})
+          fb_url = f'https://graph.facebook.com/v22.0/{page_id}/feed?{query_params}'
+          
+          req = urllib.request.Request(fb_url, method='POST')
           
           try:
               with urllib.request.urlopen(req) as response:
-                  res_data = json.loads(response.read().decode('utf-8'))
-                  content = res_data['candidates'][0]['content']['parts'][0]['text']
+                  res = response.read().decode('utf-8')
+                  print('Success:', res)
+          except urllib.error.HTTPError as e:
+              print(f'HTTP Error {e.code}: {e.reason}')
+              print('Raw Response:', e.read().decode('utf-8'))
           except Exception as e:
-              content = 'Failed to generate content via API'
-
-          post_text = f'🔬 *Daily Science & Fun* 🔬\n\n{content}'
-
-          # Facebook Graph API සඳහා message එක Encoding කිරීම
-          msg_encoded = urllib.parse.urlencode({'message': post_text, 'access_token': page_access_token})
-          fb_url = f'https://graph.facebook.com/v20.0/{page_id}/feed?{msg_encoded}'
-          
-          fb_req = urllib.request.Request(fb_url, method='POST')
-          try:
-              with urllib.request.urlopen(fb_req) as fb_response:
-                  print('Post Success:', fb_response.read().decode('utf-8'))
-          except Exception as fb_err:
-              print('Facebook Post Error:', fb_err)
-          "
+              print('Unexpected Error:', e)
